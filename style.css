@@ -1,0 +1,455 @@
+/* Common Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  background: #f7f7f7;
+  min-height: 100vh; /* Thêm */
+  display: flex; /* Thêm */
+  flex-direction: column; /* Thêm */
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Header Container ---------- */
+.navbar {
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ---------- Logo ---------- */
+.logo {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Navigation Container ---------- */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* ---------- Chung cho các link ---------- */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #007bff;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  background: rgba(0,123,255,0.1);
+  border-radius: 5px;
+}
+
+/* ---------- Auth Links ---------- */
+.auth-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Home Page */
+.hero {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('assets/hero-bg.jpg');
+  background-size: cover;
+  padding: 4rem 1rem;
+  color: white;
+  text-align: center;
+}
+
+.search-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.9);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.search-form {
+  display: block;
+}
+
+.search-form .form-row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 10px 0;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.input-with-icon {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0 15px;
+}
+
+.input-with-icon i {
+  margin-right: 10px;
+  color: #666;
+}
+
+.input-with-icon input,
+.input-with-icon select {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  padding-left: 5px;
+  outline: none;
+}
+
+.input-with-icon input[type="date"]::-webkit-calendar-picker-indicator,
+.input-with-icon select {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.search-btn {
+  height: 48px;
+  padding: 0 30px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.search-btn:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-wrap: wrap;
+  }
+  
+  .form-group {
+    min-width: 100%;
+  }
+  
+  .search-btn {
+    width: 100%;
+  }
+}
+
+.featured-hotels {
+  padding: 4rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hotel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.hotel-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hotel-image {
+  position: relative;
+  height: 200px;
+}
+
+.hotel-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hotel-rating {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.hotel-info {
+  padding: 1rem;
+}
+
+.hotel-price {
+  color: #007bff;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Auth Pages */
+.auth-page {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.auth-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #eee;
+}
+
+.auth-tab {
+  padding: 12px 24px;
+  cursor: pointer;
+  color: #666;
+  border-bottom: 3px solid transparent;
+}
+
+.auth-tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.auth-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Verify Page */
+.verify-page {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.verify-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.otp-inputs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.otp-inputs input {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.countdown {
+  color: #666;
+  margin: 1rem 0;
+}
+
+/* FOOTER */
+footer {
+  background: #f8f9fa;
+  padding: 2rem 0;
+  margin-top: auto; /* Quan trọng - đẩy footer xuống dưới cùng */
+  width: 100%;
+}
+
+footer .container {
+  text-align: center; /* Căn giữa nội dung theo chiều ngang */
+  max-width: 1200px;
+  margin: 0 auto; /* Căn giữa container */
+  padding: 0 15px; /* Tránh nội dung dính sát mép */
+}
+
+footer p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
+  width: 100%; /* Đảm bảo đoạn văn chiếm full width */
+}
+
+/* ========== SEARCH FILTERS ========== */
+.filter-sidebar {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-right: 30px;
+}
+
+.filter-group {
+  margin-bottom: 25px;
+}
+
+.filter-title {
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 8px;
+}
+
+.price-range-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.price-range-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* ========== ROOM CARD ========== */
+.room-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.room-card:hover {
+  transform: translateY(-5px);
+}
+
+.room-type {
+  font-size: 1.2rem;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.room-capacity {
+  display: inline-block;
+  background: #e3f2fd;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.room-amenities {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-amenities li {
+  background: #f8f9fa;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* ========== DATE PICKER ========== */
+.flatpickr-calendar {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2)!important;
+  border-radius: 10px!important;
+}
+
+/* ========== RESPONSIVE GRID ========== */
+@media (max-width: 768px) {
+  .hotel-grid {
+      grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-sidebar {
+      margin-right: 0;
+      margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hotel-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .price-range-input {
+      flex-direction: column;
+  }
+}
+
+/* ========== LOADING ANIMATION ========== */
+.loading-spinner {
+  display: none;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 30px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

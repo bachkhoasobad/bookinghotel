@@ -1,0 +1,25 @@
+BookingHotel
+├── index.php           # Giao diện trang chủ
+├── loginregister.php   # Đăng ký và đăng nhập
+├── verify.php          # Xác nhận tài khoản
+├── verify_process.php  # Xử lý logic xác nhận tài khoản
+├── resendotp.php       # Xử lý gửi lại mã OTP
+├── logout.php           # Đăng xuất chuyển ra trang chủ
+├── search.php          # Trang kết quả tìm kiếm
+├── autocomplete.php    # Xử lý gợi ý tự động cho tìm kiếm
+├── includes/
+│   ├── config.php      # Cấu hình kết nối database
+│   ├── header.php      # Header dùng chung
+│   └── footer.php      # Footer dùng chung
+├── assets/
+│   ├── css/
+│   │   └── style.css   # File CSS chính
+│   ├── js/
+│   │   └── app.js      # JavaScript cho website
+│   └── images/
+│       ├── hotel1.jpg
+│       ├── hotel2.jpg
+│       └── hotel(n).jpg
+└── mailer/
+    ├── server.js       # Server Node.js cho gửi email
+    └── ...             # Các thư viện và file cấu hình khác của Node.js
