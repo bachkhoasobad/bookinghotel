@@ -15,18 +15,18 @@ CREATE TABLE `hotels` (
   `name` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
-  `price` decimal(10, 0) DEFAULT NULL,
+  `price` decimal(12, 2) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `rating` decimal(2, 1) DEFAULT NULL,
-  `amenities` text DEFAULT NULL,
-  `policies` text DEFAULT NULL,
+  `rating` decimal(3, 1) DEFAULT NULL,
+  `amenities` longtext DEFAULT NULL,
+  `policies` longtext DEFAULT NULL,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 -- Bảng rooms
 CREATE TABLE rooms (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    hotel_id INT NOT NULL,
+    hotel_id INT(11) UNSIGNED NOT NULL ,
     room_type VARCHAR(100) NOT NULL,
     price DECIMAL(12,2) NOT NULL,
     capacity INT NOT NULL,
