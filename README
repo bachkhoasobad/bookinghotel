@@ -24,36 +24,8 @@ BookingHotel
     ├── server.js       # Server Node.js cho gửi email
     └── ...             # Các thư viện và file cấu hình khác của Node.js
 
-//Người thứ nhất tạo database số lượng lớn theo khách sạn gồm thông tin và 
-ảnh khách sạn tạo ảo nên ghép ảnh thật nhiều khách sạn càng tốt
-hotels:
-INSERT INTO hotels (
-    name,
-    description,
-    location,
-    price,
-    image,
-    rating,
-    amenities,
-    policies,
-    created_at
-) VALUES(
-    'Hilton Hanoi Opera',
-    'Khách sạn 5 sao đẳng cấp gần Nhà hát Lớn',
-    'Hoàn Kiếm, Hà Nội',
-    3500000,
-    'hilton.jpg',
-    4.9,
-    '["Hồ bơi ngoài trời", "Spa", "3 nhà hàng", "Trung tâm hội nghị"]',
-    '{"checkin": "14:00", "checkout": "12:00", "children": "Miễn phí dưới 12 tuổi"}',
-    '2024-01-10 09:00:00'
-),
-rooms:
-INSERT INTO rooms (hotel_id, room_type, price, capacity) VALUES
-(1, 'Phòng Deluxe', 3500000, 2),
-(1, 'Phòng Executive', 4500000, 2),
-(1, 'Suite hướng thành phố', 6000000, 3),
-(1, 'Grand Suite', 8000000, 4); 
+
+
 bookings và booking_rooms chưa phát triển
 // Người thứ hai, ba nghiên cứu làm giao diện booking, khi đặt phòng bằng cách ấn vào khách sạn
 sẽ đưa đến giao diện đặt phòng thanh toán
