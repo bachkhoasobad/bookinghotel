@@ -183,3 +183,87 @@ document.addEventListener('DOMContentLoaded', () => {
         validateDates();
     }
 });
+
+/* Thêm script xử lý cho booking.php */
+document.addEventListener('DOMContentLoaded', () => {
+    const bookingForm = document.getElementById('bookingForm');
+    if (!bookingForm) return;
+
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(bookingForm);
+        const messageContainer = document.getElementById('booking-message');
+        messageContainer.innerHTML = ''; // Clear message
+
+        try {
+            const response = await fetch('payment.php', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const text = await response.text();
+            messageContainer.innerHTML = text;
+
+        } catch (error) {
+            messageContainer.innerHTML = `<div class="error">Lỗi: ${error.message}</div>`;
+        }
+    });
+});
+// app.js - Phần xử lý thanh toán
+document.addEventListener('DOMContentLoaded', () => {
+    const paymentForm = document.getElementById('paymentForm');
+    const resultContainer = document.getElementById('paymentResult');
+    
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            resultContainer.style.display = 'block';
+            resultContainer.innerHTML = `
+                <div class="alert alert-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Đang xử lý thanh toán...
+                </div>
+            `;
+
+            try {
+                const response = await fetch('payment_process.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        payment_method: document.querySelector('.method-btn.active').dataset.method,
+                        ...Object.fromEntries(new FormData(paymentForm))
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    resultContainer.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> ${result.message}
+                        </div>
+                    `;
+                    window.location.href = result.redirect;
+                } else {
+                    resultContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle"></i> ${result.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Lỗi kết nối!
+                    </div>
+                `;
+            }
+        });
+    }
+});
