@@ -63,74 +63,83 @@ $defaultCheckout = date('Y-m-d', strtotime('+1 day'));
     <div class="hotel-grid">
         <?php if(count($hotels) > 0): ?>
             <?php foreach($hotels as $hotel):
-                $imagePath = "assets/images/" . $hotel['image'];
-                if (file_exists($imagePath)): ?>
-                    <div class="hotel-card">
-                        <div class="hotel-image">
-                            <img src="<?= htmlspecialchars($imagePath) ?>"
-                                 alt="<?= htmlspecialchars($hotel['name']) ?>">
-                            <div class="hotel-rating">
-                                <i class="fas fa-star"></i>
-                                <?= number_format($hotel['rating'], 1) ?>
-                            </div>
-                        </div>
-                        <div class="hotel-info">
-                            <h3>
-                                <a href="detail.php?id=<?= urlencode($hotel['id']) ?>">
-                                    <?= htmlspecialchars($hotel['name']) ?>
-                                </a>
-                            </h3>
-                            <div class="hotel-meta">
-                                <span class="location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <?= htmlspecialchars($hotel['location']) ?>
-                                </span>
-                            </div>
-                            <p class="hotel-description">
-                                <?= htmlspecialchars(substr($hotel['description'], 0, 100)) ?>...
-                            </p>
-                            <div class="hotel-price">
-                                Từ <?= number_format($hotel['price'], 0, ',', '.') ?>đ/đêm
-                            </div>
-                            <a href="detail.php?id=<?= urlencode($hotel['id']) ?>" class="book-btn">Xem chi tiết</a>
+                $imagePath = "assets/images/" . $hotel['image']; // Giả sử bạn có ảnh local cho khách sạn
+                // Kiểm tra nếu ảnh tồn tại, nếu không thì dùng ảnh mặc định
+                $displayImage = file_exists($imagePath) ? $imagePath : "assets/images/default.jpg";
+            ?>
+                <div class="hotel-card">
+                    <div class="hotel-image">
+                        <img src="<?= htmlspecialchars($displayImage) ?>"
+                             alt="<?= htmlspecialchars($hotel['name']) ?>">
+                        <div class="hotel-rating">
+                            <i class="fas fa-star"></i>
+                            <?= number_format($hotel['rating'], 1) ?>
                         </div>
                     </div>
-                <?php else: ?>
-                    <div class="hotel-card">
-                        <div class="hotel-image">
-                            <img src="assets/images/default.jpg" alt="<?= htmlspecialchars($hotel['name']) ?>">
-                            <div class="hotel-rating">
-                                <i class="fas fa-star"></i>
-                                <?= number_format($hotel['rating'], 1) ?>
-                            </div>
+                    <div class="hotel-info">
+                        <h3>
+                            <a href="detail.php?id=<?= urlencode($hotel['id']) ?>">
+                                <?= htmlspecialchars($hotel['name']) ?>
+                            </a>
+                        </h3>
+                        <div class="hotel-meta">
+                            <span class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <?= htmlspecialchars($hotel['location']) ?>
+                            </span>
                         </div>
-                        <div class="hotel-info">
-                            <h3>
-                                <a href="detail.php?id=<?= urlencode($hotel['id']) ?>">
-                                    <?= htmlspecialchars($hotel['name']) ?>
-                                </a>
-                            </h3>
-                            <div class="hotel-meta">
-                                <span class="location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <?= htmlspecialchars($hotel['location']) ?>
-                                </span>
-                            </div>
-                            <p class="hotel-description">
-                                <?= htmlspecialchars(substr($hotel['description'], 0, 100)) ?>...
-                            </p>
-                            <div class="hotel-price">
-                                Từ <?= number_format($hotel['price'], 0, ',', '.') ?>đ/đêm
-                            </div>
-                            <a href="detail.php?id=<?= urlencode($hotel['id']) ?>" class="book-btn">Xem chi tiết</a>
+                        <p class="hotel-description">
+                            <?= htmlspecialchars(substr($hotel['description'], 0, 100)) ?>...
+                        </p>
+                        <div class="hotel-price">
+                            Từ <?= number_format($hotel['price'], 0, ',', '.') ?>đ/đêm
                         </div>
+                        <a href="detail.php?id=<?= urlencode($hotel['id']) ?>" class="book-btn">Xem chi tiết</a>
                     </div>
-                <?php endif; ?>
+                </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <div class="no-results">Không tìm thấy khách sạn nổi bật</div>
+            <div class="no-results">Không tìm thấy khách sạn nổi bật.</div>
         <?php endif; ?>
     </div>
 </section>
 
 <?php include 'includes/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const heroElement = document.querySelector('.hero');
+    
+    // THAY THẾ CÁC ĐƯỜNG DẪN LOCAL BẰNG CÁC URL TRỰC TUYẾN
+    // Bạn có thể thay đổi các URL này thành các ảnh bạn muốn
+    const imageUrls = [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop"
+    ];
+
+    let currentImageIndex = 0;
+
+    function changeBackgroundImage() {
+        // Lớp phủ gradient để chữ dễ đọc hơn
+        const gradient = 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), '; 
+        heroElement.style.backgroundImage = gradient + 'url("' + imageUrls[currentImageIndex] + '")';
+        
+        currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+    }
+
+    // Thay đổi ảnh nền lần đầu tiên
+    if (imageUrls.length > 0) { // Chỉ chạy nếu có ảnh trong danh sách
+        changeBackgroundImage();
+        // Thiết lập thời gian tự động chuyển ảnh (ví dụ: 7 giây)
+        setInterval(changeBackgroundImage, 7000); // 7000 milliseconds = 7 seconds
+    } else {
+        // Fallback nếu không có ảnh nào trong imageUrls (tùy chọn)
+        heroElement.style.backgroundColor = '#333'; // Một màu nền mặc định
+        console.warn("Không có ảnh nào được cung cấp cho slideshow hero.");
+    }
+});
+</script>
+</body> </html>

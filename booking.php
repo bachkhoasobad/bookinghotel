@@ -62,17 +62,10 @@ try {
         header('Location: index.php'); exit();
     }
 
-    // Lấy các loại phòng có sẵn (chưa kiểm tra tính khả dụng thực tế theo ngày đặt)
-    // Chỉ lọc theo sức chứa của một phòng so với tổng số khách (đơn giản hóa)
-    // Thực tế cần query phức tạp hơn để kiểm tra phòng nào còn trống trong khoảng ngày đó.
     $stmtRooms = $pdo->prepare("SELECT id, room_type, price, capacity FROM rooms WHERE hotel_id = ? AND capacity >= ? ORDER BY price ASC");
-    // Nếu muốn mỗi phòng phải chứa được ít nhất 1 người, và người dùng chọn số lượng phòng:
-    // $stmtRooms->execute([$hotelId, 1]);
-    // Nếu muốn mỗi loại phòng phải có khả năng chứa toàn bộ số khách (ít thực tế hơn):
-    $stmtRooms->execute([$hotelId, $guests]); // Tạm để là $guests, người dùng sẽ chọn 1 phòng
+    $stmtRooms->execute([$hotelId, $guests]);
     $availableRooms = $stmtRooms->fetchAll(PDO::FETCH_ASSOC);
 
-    // Lấy thông tin user đã đăng nhập để điền sẵn
     $stmtUser = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
     $stmtUser->execute([$userId]);
     $loggedInUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
@@ -104,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($customer_phone)) $form_errors_booking['customer_phone'] = "Vui lòng nhập số điện thoại.";
     if (empty($chosen_payment_method)) $form_errors_booking['payment_method'] = "Vui lòng chọn phương thức thanh toán.";
 
-    // Lấy thông tin phòng đã chọn để tính giá và kiểm tra sức chứa
     $selected_room_info = null;
     if ($selected_room_id) {
         foreach ($availableRooms as $r) {
@@ -164,7 +156,6 @@ include 'includes/header.php';
             echo '<div class="message error-message main-error">' . $_SESSION['error_message_global'] . '</div>';
             unset($_SESSION['error_message_global']);
         }
-        // Hiển thị lỗi validate form nếu có
         if (!empty($form_errors_booking)) {
             echo '<div class="message error-message form-validation-summary">Vui lòng kiểm tra lại các thông tin sau:<ul>';
             foreach ($form_errors_booking as $error) {
@@ -245,15 +236,21 @@ include 'includes/header.php';
                 <div class="payment-options-booking <?= isset($form_errors_booking['payment_method']) ? 'has-error' : '' ?>">
                     <div class="payment-option-booking">
                         <input type="radio" name="payment_method" value="momo" id="pay_momo_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'momo') ? 'checked' : '' ?> required>
-                        <label for="pay_momo_booking"><img src="assets/images/momo_logo.png" alt="Momo" class="payment-logo-booking"> Thanh toán Momo</label>
+                        <label for="pay_momo_booking">
+                            <i class="fas fa-wallet payment-icon-booking payment-icon-momo"></i> Thanh toán Momo
+                        </label>
                     </div>
                     <div class="payment-option-booking">
                         <input type="radio" name="payment_method" value="visa" id="pay_visa_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'visa') ? 'checked' : '' ?> required>
-                        <label for="pay_visa_booking"><img src="assets/images/visa_logo.png" alt="Visa" class="payment-logo-booking"> Thanh toán Visa</label>
+                        <label for="pay_visa_booking">
+                            <i class="fab fa-cc-visa payment-icon-booking payment-icon-visa"></i> Thanh toán Visa
+                        </label>
                     </div>
                     <div class="payment-option-booking">
                         <input type="radio" name="payment_method" value="cod" id="pay_cod_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'cod') ? 'checked' : '' ?> required>
-                        <label for="pay_cod_booking"><i class="fas fa-money-bill-wave payment-icon-booking"></i> Thanh toán khi nhận phòng (COD)</label>
+                        <label for="pay_cod_booking">
+                            <i class="fas fa-money-bill-wave payment-icon-booking payment-icon-cod"></i> Thanh toán khi nhận phòng (COD)
+                        </label>
                     </div>
                     <?php if(isset($form_errors_booking['payment_method'])): ?><span class="error-text-booking"><?= $form_errors_booking['payment_method'] ?></span><?php endif; ?>
                 </div>
@@ -266,4 +263,38 @@ include 'includes/header.php';
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roomSelect = document.getElementById('room_id');
+    const quantityInput = document.getElementById('quantity');
+    const estimatedPriceSpan = document.getElementById('estimated_total_price_booking');
+    const nights = parseInt(document.getElementById('booking_nights').textContent) || 1;
+
+    function updateEstimatedPrice() {
+        const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+        const pricePerNight = parseFloat(selectedOption.getAttribute('data-price'));
+        const quantity = parseInt(quantityInput.value) || 1;
+
+        if (pricePerNight && quantity > 0) {
+            const total = pricePerNight * nights * quantity;
+            estimatedPriceSpan.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+        } else {
+            estimatedPriceSpan.textContent = 'Vui lòng chọn phòng và số lượng';
+        }
+    }
+
+    if (roomSelect && quantityInput && estimatedPriceSpan) {
+        roomSelect.addEventListener('change', updateEstimatedPrice);
+        quantityInput.addEventListener('change', updateEstimatedPrice);
+        quantityInput.addEventListener('input', updateEstimatedPrice); // Cập nhật khi gõ
+        
+        // Cập nhật giá lần đầu nếu đã có giá trị được chọn (ví dụ khi form post bị lỗi và load lại)
+        if (roomSelect.value) {
+            updateEstimatedPrice();
+        }
+    }
+});
+</script>
+
 <?php include 'includes/footer.php'; ?>

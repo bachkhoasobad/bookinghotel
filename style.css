@@ -228,7 +228,44 @@ body {
   font-weight: bold;
   margin-top: 1rem;
 }
+/* ... (tất cả CSS hiện có của bạn) ... */
 
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.pagination a {
+  color: #007bff;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+  border: 1px solid #dee2e6;
+  margin: 0 0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.pagination a.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+.pagination a i {
+  font-size: 0.8rem;
+}
 /* Auth Pages */
 .auth-page {
   max-width: 500px;
@@ -898,5 +935,173 @@ textarea.form-control {
     }
     .status-actions-custom .btn:last-child {
         margin-bottom: 0;
+    }
+}
+/* === My Bookings Page (my_bookings.php) === */
+.my-bookings-page .container.content { /* Sử dụng lại style chung nếu có */
+    background-color: #fff;
+    padding: 25px; /* Tăng padding một chút */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Tăng shadow */
+}
+
+.my-bookings-page h2 {
+    text-align: center;
+    color: #0056b3; /* Giữ màu từ trước */
+    margin-bottom: 30px; /* Tăng khoảng cách */
+    font-size: 2em; /* Tăng kích thước tiêu đề */
+}
+.my-bookings-page h2 i {
+    margin-right: 12px;
+}
+
+.my-bookings-list {
+    display: grid; /* Sử dụng grid để hiển thị card đẹp hơn */
+    grid-template-columns: 1fr; /* Mặc định 1 cột */
+    gap: 25px; /* Khoảng cách giữa các card */
+}
+
+/* Nếu muốn 2 cột trên màn hình lớn hơn */
+@media (min-width: 992px) {
+    .my-bookings-list {
+        grid-template-columns: repeat(2, 1fr); /* 2 cột */
+    }
+}
+@media (min-width: 1200px) {
+    /* Có thể giữ 2 cột hoặc tăng lên nếu muốn, tùy thiết kế */
+}
+
+
+.my-booking-card {
+    background-color: #ffffff; /* Nền trắng cho card */
+    border: 1px solid #e0e0e0; /* Viền nhẹ hơn */
+    border-radius: 8px; /* Bo góc nhiều hơn */
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Mặc định xếp dọc, sẽ đổi cho màn hình lớn hơn nếu cần */
+    gap: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.my-booking-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.my-booking-hotel-image {
+    flex-shrink: 0;
+    width: 100%; /* Chiếm toàn bộ chiều rộng của card ban đầu */
+    height: 180px; /* Chiều cao cố định cho ảnh */
+    border-radius: 6px; /* Bo góc cho ảnh */
+    overflow: hidden; /* Đảm bảo ảnh không tràn ra ngoài */
+}
+
+.my-booking-hotel-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.my-booking-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.my-booking-details h3 {
+    font-size: 1.5em; /* Kích thước tên khách sạn */
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: #333;
+}
+.my-booking-details h3 a {
+    color: inherit; /* Kế thừa màu từ h3 */
+    text-decoration: none;
+}
+.my-booking-details h3 a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.hotel-location-history {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 12px;
+}
+.hotel-location-history i {
+    margin-right: 5px;
+    color: #007bff;
+}
+
+.booking-card-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+}
+
+.my-booking-details p {
+    margin-bottom: 8px;
+    font-size: 0.95em; /* Giữ nguyên hoặc điều chỉnh */
+    color: #333; /* Màu chữ đậm hơn chút */
+    line-height: 1.6;
+}
+
+.my-booking-details p strong {
+    color: #000; /* Màu chữ cho label đậm nhất */
+    min-width: 120px; /* Điều chỉnh nếu cần */
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.price-highlight-booking { /* Đã có */
+    font-weight: bold;
+    color: #c0392b; /* Màu đỏ cho giá nổi bật hơn */
+    font-size: 1.1em;
+}
+
+/* CSS cho các trạng thái đơn hàng (ví dụ) */
+.status-confirmed { color: #27ae60; font-weight: bold; }
+.status-pending { color: #f39c12; font-weight: bold; }
+.status-cancelled { color: #c0392b; font-weight: bold; }
+.status-completed { color: #2980b9; font-weight: bold; }
+
+.booking-card-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Cho các nút xuống dòng nếu không đủ chỗ */
+}
+.booking-card-actions .btn-sm { /* Style cho các nút nhỏ nếu có */
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+
+.my-bookings-page .message.info-message { /* Đã có từ trước, có thể chỉnh lại nếu cần */
+    text-align: center;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+.my-bookings-page .message.info-message p {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+.my-bookings-page .message.info-message .btn i {
+    margin-right: 6px;
+}
+
+
+/* Điều chỉnh layout card cho màn hình lớn hơn nếu muốn ảnh bên trái, nội dung bên phải */
+@media (min-width: 768px) {
+    .my-booking-card {
+        flex-direction: row; /* Ảnh bên trái, nội dung bên phải */
+        align-items: flex-start; /* Căn các item lên trên cùng */
+    }
+    .my-booking-hotel-image {
+        width: 180px; /* Kích thước ảnh cố định bên trái */
+        height: 150px; /* Chiều cao tương ứng */
     }
 }
