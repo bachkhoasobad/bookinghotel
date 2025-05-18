@@ -213,57 +213,177 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-// app.js - Phần xử lý thanh toán
-document.addEventListener('DOMContentLoaded', () => {
-    const paymentForm = document.getElementById('paymentForm');
-    const resultContainer = document.getElementById('paymentResult');
-    
-    if (paymentForm) {
-        paymentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            resultContainer.style.display = 'block';
-            resultContainer.innerHTML = `
-                <div class="alert alert-loading">
-                    <i class="fas fa-spinner fa-spin"></i> Đang xử lý thanh toán...
-                </div>
-            `;
 
-            try {
-                const response = await fetch('payment_process.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        payment_method: document.querySelector('.method-btn.active').dataset.method,
-                        ...Object.fromEntries(new FormData(paymentForm))
-                    })
-                });
 
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    resultContainer.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> ${result.message}
-                        </div>
-                    `;
-                    window.location.href = result.redirect;
-                } else {
-                    resultContainer.innerHTML = `
-                        <div class="alert alert-danger">
-                            <i class="fas fa-times-circle"></i> ${result.message}
-                        </div>
-                    `;
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- DETAIL.PHP: Update min checkout date & Form validation ---
+    const detailPageForm = document.querySelector('.view-rooms-form');
+    if (detailPageForm) {
+        const checkinInput = detailPageForm.querySelector('#checkin');
+        const checkoutInput = detailPageForm.querySelector('#checkout');
+
+        if (checkinInput && checkoutInput) {
+            // Set initial min for checkout based on checkin
+            const initialCheckinDate = new Date(checkinInput.value);
+            const initialNextDay = new Date(initialCheckinDate.setDate(initialCheckinDate.getDate() + 1));
+            checkoutInput.min = initialNextDay.toISOString().split('T')[0];
+
+
+            checkinInput.addEventListener('change', function() {
+                const checkinDate = new Date(this.value);
+                // Reset date to avoid issues with setDate modifying original
+                const nextDay = new Date(this.value);
+                nextDay.setDate(checkinDate.getDate() + 1);
+
+                const nextDayString = nextDay.toISOString().split('T')[0];
+                checkoutInput.min = nextDayString;
+                // If checkout is earlier than new checkin+1, update checkout
+                if (new Date(checkoutInput.value) <= new Date(this.value)) {
+                    checkoutInput.value = nextDayString;
                 }
-            } catch (error) {
-                resultContainer.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle"></i> Lỗi kết nối!
-                    </div>
-                `;
+            });
+        }
+        // Basic validation before submitting from detail page
+        detailPageForm.addEventListener('submit', function(e) {
+            if (checkinInput && checkoutInput && new Date(checkoutInput.value) <= new Date(checkinInput.value)) {
+                alert('Ngày trả phòng phải sau ngày nhận phòng.');
+                e.preventDefault();
             }
         });
     }
+
+
+    // --- BOOKING.PHP: Calculate estimated price ---
+    const bookingFormPage = document.getElementById('bookingFormPage');
+    if (bookingFormPage) {
+        const roomSelectBooking = bookingFormPage.querySelector('#room_id');
+        const quantityInputBooking = bookingFormPage.querySelector('#quantity');
+        const priceDisplayBooking = bookingFormPage.querySelector('#estimated_total_price_booking');
+        const nightsTextEl = document.getElementById('booking_nights'); // Lấy element chứa số đêm
+        let nightsBooking = 0;
+
+        if(nightsTextEl) {
+            nightsBooking = parseInt(nightsTextEl.textContent || '0', 10);
+        }
+
+
+        function calculateBookingPrice() {
+            if (!roomSelectBooking || !quantityInputBooking || !priceDisplayBooking ) {
+                if (priceDisplayBooking) priceDisplayBooking.textContent = 'Vui lòng chọn phòng và số lượng';
+                return;
+            }
+            if (nightsBooking <= 0) {
+                 if (priceDisplayBooking) priceDisplayBooking.textContent = 'Số đêm không hợp lệ';
+                return;
+            }
+
+
+            const selectedOption = roomSelectBooking.options[roomSelectBooking.selectedIndex];
+            const roomPrice = parseFloat(selectedOption.dataset.price);
+            const quantity = parseInt(quantityInputBooking.value, 10);
+
+            if (selectedOption.value && roomPrice > 0 && quantity > 0) {
+                const total = roomPrice * quantity * nightsBooking;
+                priceDisplayBooking.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+            } else if (selectedOption.value) {
+                priceDisplayBooking.textContent = 'Nhập số lượng phòng hợp lệ';
+            } else {
+                priceDisplayBooking.textContent = 'Vui lòng chọn loại phòng';
+            }
+        }
+
+        if (roomSelectBooking) roomSelectBooking.addEventListener('change', calculateBookingPrice);
+        if (quantityInputBooking) quantityInputBooking.addEventListener('input', calculateBookingPrice);
+
+        // Initial calculation if values are pre-filled (e.g., after form error)
+        if (nightsBooking > 0) { // Chỉ tính nếu số đêm hợp lệ
+           calculateBookingPrice();
+        } else if (priceDisplayBooking) {
+            priceDisplayBooking.textContent = 'Kiểm tra lại ngày nhận/trả phòng';
+        }
+    }
+
+
+    // --- PAYMENT.PHP: Client-side validation for Visa form ---
+    const actualPaymentForm = document.getElementById('actualPaymentForm');
+    if (actualPaymentForm) {
+        // Lấy phương thức thanh toán từ biến JavaScript toàn cục (PENDING_BOOKING_DATA)
+        // được khai báo trong file payment.php
+        const paymentMethod = (typeof PENDING_BOOKING_DATA !== 'undefined' && PENDING_BOOKING_DATA.chosenPaymentMethod)
+                                ? PENDING_BOOKING_DATA.chosenPaymentMethod
+                                : null;
+
+        if (paymentMethod) { // Chỉ thêm event listener nếu có paymentMethod
+            actualPaymentForm.addEventListener('submit', function(event) {
+                if (paymentMethod === 'visa') {
+                    const cardNumberInput = actualPaymentForm.querySelector('#card_number_visa');
+                    const cardExpiryInput = actualPaymentForm.querySelector('#card_expiry_visa');
+                    const cardCvcInput = actualPaymentForm.querySelector('#card_cvc_visa');
+                    const cardHolderNameInput = actualPaymentForm.querySelector('#card_holder_name_visa');
+
+                    const cardNumber = cardNumberInput ? cardNumberInput.value.trim() : '';
+                    const cardExpiry = cardExpiryInput ? cardExpiryInput.value.trim() : '';
+                    const cardCvc = cardCvcInput ? cardCvcInput.value.trim() : '';
+                    const cardHolderName = cardHolderNameInput ? cardHolderNameInput.value.trim() : '';
+
+                    let visaValid = true;
+                    let alertMessage = '';
+
+                    // Xóa các thông báo lỗi cũ (nếu có)
+                    document.querySelectorAll('.payment-form-error-text').forEach(el => el.remove());
+
+
+                    if (!cardNumber || !/^(\d{4} ?){3}\d{4}$/.test(cardNumber.replace(/\s/g, ''))) {
+                        alertMessage += 'Số thẻ Visa không hợp lệ (phải đủ 16 chữ số).\n';
+                        visaValid = false;
+                        displayFieldError(cardNumberInput, 'Số thẻ Visa không hợp lệ (16 chữ số).');
+                    }
+                    if (!cardExpiry || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry)) {
+                        alertMessage += 'Ngày hết hạn thẻ Visa không hợp lệ (định dạng MM/YY).\n';
+                        visaValid = false;
+                        displayFieldError(cardExpiryInput, 'Ngày hết hạn không hợp lệ (MM/YY).');
+                    }
+                    if (!cardCvc || !/^\d{3,4}$/.test(cardCvc)) {
+                        alertMessage += 'Mã CVC/CVV thẻ Visa không hợp lệ (3 hoặc 4 chữ số).\n';
+                        visaValid = false;
+                        displayFieldError(cardCvcInput, 'Mã CVC/CVV không hợp lệ (3-4 chữ số).');
+                    }
+                    if (!cardHolderName) {
+                        alertMessage += 'Tên chủ thẻ không được để trống.\n';
+                        visaValid = false;
+                        displayFieldError(cardHolderNameInput, 'Tên chủ thẻ không được để trống.');
+                    }
+
+                    if (!visaValid) {
+                        // Thay vì alert, bạn có thể hiển thị lỗi tập trung ở một chỗ
+                        // alert('Lỗi thông tin thẻ Visa:\n' + alertMessage);
+                        const globalErrorContainer = document.querySelector('.payment-global-error-js');
+                        if (globalErrorContainer) {
+                            globalErrorContainer.textContent = 'Vui lòng kiểm tra lại các thông tin thẻ Visa đã nhập.';
+                            globalErrorContainer.style.display = 'block';
+                        }
+                        event.preventDefault(); // Ngăn form submit
+                    } else {
+                        const globalErrorContainer = document.querySelector('.payment-global-error-js');
+                        if (globalErrorContainer) globalErrorContainer.style.display = 'none';
+                    }
+                }
+            });
+        }
+    }
+
+    // Hàm phụ trợ để hiển thị lỗi ngay dưới input field
+    function displayFieldError(inputElement, message) {
+        if (!inputElement) return;
+        // Xóa lỗi cũ nếu có
+        const oldError = inputElement.parentElement.querySelector('.payment-form-error-text');
+        if (oldError) oldError.remove();
+
+        const errorSpan = document.createElement('span');
+        errorSpan.className = 'payment-form-error-text error-text-booking'; // Sử dụng class đã có hoặc tạo class mới
+        errorSpan.textContent = message;
+        inputElement.parentElement.appendChild(errorSpan); // Chèn lỗi vào sau input
+    }
+
 });

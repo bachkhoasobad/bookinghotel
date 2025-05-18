@@ -1,178 +1,269 @@
 <?php
 session_start();
 include 'includes/config.php';
-$pageTitle = 'Đặt phòng';
 
+// --- PHẦN 1: KIỂM TRA ĐĂNG NHẬP VÀ THAM SỐ ---
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['error_message_global'] = "Vui lòng đăng nhập để có thể đặt phòng.";
+    $queryString = http_build_query($_GET);
+    $_SESSION['redirect_after_login'] = 'booking.php?' . $queryString;
+    header('Location: loginregister.php?tab=login');
+    exit();
+}
 
-// Kiểm tra xem các tham số cần thiết có tồn tại không
+// Kiểm tra các tham số cần thiết từ GET (từ detail.php)
 if (!isset($_GET['hotel_id']) || !is_numeric($_GET['hotel_id']) ||
-    !isset($_GET['room_type']) || !is_numeric($_GET['room_type']) ||
     !isset($_GET['checkin_date']) || empty($_GET['checkin_date']) ||
     !isset($_GET['checkout_date']) || empty($_GET['checkout_date']) ||
-    !isset($_GET['guests']) || !is_numeric($_GET['guests']) || $_GET['guests'] < 1 ||
-    !isset($_GET['quantity']) || !is_numeric($_GET['quantity']) || $_GET['quantity'] < 1) {
-    header('Location: index.php'); // Chuyển hướng nếu thiếu tham số
+    !isset($_GET['guests']) || !is_numeric($_GET['guests']) || intval($_GET['guests']) < 1) {
+    $_SESSION['error_message_global'] = "Thông tin yêu cầu đặt phòng không đầy đủ. Vui lòng thử lại từ trang chi tiết khách sạn.";
+    header('Location: index.php'); // Hoặc quay lại trang trước đó nếu có thể
     exit();
 }
 
 $hotelId = intval($_GET['hotel_id']);
-$roomId = intval($_GET['room_type']);
-$checkinDate = htmlspecialchars($_GET['checkin_date']);
-$checkoutDate = htmlspecialchars($_GET['checkout_date']);
+$checkinDateStr = htmlspecialchars($_GET['checkin_date']);
+$checkoutDateStr = htmlspecialchars($_GET['checkout_date']);
 $guests = intval($_GET['guests']);
-$quantity = intval($_GET['quantity']);
+$userId = $_SESSION['user_id'];
 
+// Validate ngày tháng
 try {
-    // Lấy thông tin khách sạn
-    $stmtHotel = $pdo->prepare("SELECT name, image, location, description FROM hotels WHERE id = ?");
+    $checkinDT = new DateTime($checkinDateStr);
+    $checkoutDT = new DateTime($checkoutDateStr);
+    $currentDate = new DateTime(date('Y-m-d'));
+
+    if ($checkinDT < $currentDate) {
+        $_SESSION['error_message_global'] = "Ngày nhận phòng không thể là một ngày trong quá khứ.";
+        header('Location: detail.php?id=' . $hotelId); exit();
+    }
+    if ($checkoutDT <= $checkinDT) {
+        $_SESSION['error_message_global'] = "Ngày trả phòng phải sau ngày nhận phòng.";
+        header('Location: detail.php?id=' . $hotelId . '&checkin=' . $checkinDateStr . '&guests=' . $guests); exit();
+    }
+    $interval = $checkinDT->diff($checkoutDT);
+    $nights = $interval->days;
+    if ($nights <= 0) $nights = 1; // Đảm bảo ít nhất 1 đêm
+
+} catch (Exception $e) {
+    $_SESSION['error_message_global'] = "Định dạng ngày cung cấp không hợp lệ.";
+    header('Location: detail.php?id=' . $hotelId); exit();
+}
+
+
+// --- PHẦN 2: LẤY DỮ LIỆU KHÁCH SẠN, PHÒNG, USER ---
+try {
+    $stmtHotel = $pdo->prepare("SELECT name, location FROM hotels WHERE id = ?");
     $stmtHotel->execute([$hotelId]);
     $hotel = $stmtHotel->fetch(PDO::FETCH_ASSOC);
 
-    // Lấy thông tin phòng
-    $stmtRoom = $pdo->prepare("SELECT room_type, price, capacity FROM rooms WHERE id = ? AND hotel_id = ?");
-    $stmtRoom->execute([$roomId, $hotelId]);
-    $room = $stmtRoom->fetch(PDO::FETCH_ASSOC);
-
-    if (!$hotel || !$room) {
-        die("<div class='error'>Lỗi: Không tìm thấy thông tin khách sạn hoặc phòng.</div>");
+    if (!$hotel) {
+        $_SESSION['error_message_global'] = "Không tìm thấy thông tin khách sạn.";
+        header('Location: index.php'); exit();
     }
 
-    // Kiểm tra số lượng khách có phù hợp với sức chứa của phòng không
-    if ($guests > $room['capacity']) {
-        die("<div class='error'>Lỗi: Số lượng khách vượt quá sức chứa của phòng.</div>");
-    }
+    // Lấy các loại phòng có sẵn (chưa kiểm tra tính khả dụng thực tế theo ngày đặt)
+    // Chỉ lọc theo sức chứa của một phòng so với tổng số khách (đơn giản hóa)
+    // Thực tế cần query phức tạp hơn để kiểm tra phòng nào còn trống trong khoảng ngày đó.
+    $stmtRooms = $pdo->prepare("SELECT id, room_type, price, capacity FROM rooms WHERE hotel_id = ? AND capacity >= ? ORDER BY price ASC");
+    // Nếu muốn mỗi phòng phải chứa được ít nhất 1 người, và người dùng chọn số lượng phòng:
+    // $stmtRooms->execute([$hotelId, 1]);
+    // Nếu muốn mỗi loại phòng phải có khả năng chứa toàn bộ số khách (ít thực tế hơn):
+    $stmtRooms->execute([$hotelId, $guests]); // Tạm để là $guests, người dùng sẽ chọn 1 phòng
+    $availableRooms = $stmtRooms->fetchAll(PDO::FETCH_ASSOC);
 
-    // Tính tổng giá (chưa tính số đêm, sẽ được tính khi đặt phòng)
-    $roomPrice = $room['price'];
+    // Lấy thông tin user đã đăng nhập để điền sẵn
+    $stmtUser = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
+    $stmtUser->execute([$userId]);
+    $loggedInUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
-    // Xử lý khi form đặt phòng được gửi
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $customerName = htmlspecialchars($_POST['name'] ?? '');
-        $customerEmail = htmlspecialchars($_POST['email'] ?? '');
-        $customerPhone = htmlspecialchars($_POST['phone'] ?? '');
-        $specialRequests = htmlspecialchars($_POST['special_requests'] ?? '');
-        $paymentMethod = htmlspecialchars($_POST['payment_method'] ?? '');
+} catch (PDOException $e) {
+    error_log("Lỗi tải dữ liệu trang booking (Hotel ID: $hotelId): " . $e->getMessage());
+    $_SESSION['error_message_global'] = "Lỗi hệ thống khi tải thông tin đặt phòng.";
+    header('Location: detail.php?id=' . $hotelId); exit();
+}
 
-        if (empty($customerName) || empty($customerEmail) || empty($customerPhone) || empty($paymentMethod)) {
-            $error = "Vui lòng nhập đầy đủ thông tin liên hệ và chọn phương thức thanh toán.";
-        } else {
-            // Tính tổng giá dựa trên số đêm thực tế
-            $startDate = new DateTime($checkinDate);
-            $endDate = new DateTime($checkoutDate);
-            $interval = $startDate->diff($endDate);
-            $nights = $interval->days;
-            $totalPrice = $roomPrice * $nights * $quantity;
 
-            // Lưu thông tin đặt phòng vào session để chuyển sang trang thanh toán
-            $_SESSION['booking_data'] = [
-                'hotel_id' => $hotelId,
-                'room_id' => $roomId,
-                'checkin_date' => $checkinDate,
-                'checkout_date' => $checkoutDate,
-                'guests' => $guests,
-                'quantity' => $quantity,
-                'total_price' => $totalPrice,
-                'customer_name' => $customerName,
-                'customer_email' => $customerEmail,
-                'customer_phone' => $customerPhone,
-                'special_requests' => $specialRequests,
-            ];
-            $_SESSION['payment_method'] = $paymentMethod; // Lưu phương thức thanh toán vào session
+// --- PHẦN 3: XỬ LÝ FORM SUBMIT (POST) ---
+$form_errors_booking = [];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $selected_room_id = $_POST['room_id'] ?? null;
+    $quantity = intval($_POST['quantity'] ?? 1);
+    if ($quantity < 1) $quantity = 1;
 
-            // Chuyển hướng đến trang thanh toán
-            header('Location: payment.php');
-            exit();
+    $customer_name = trim(htmlspecialchars($_POST['customer_name'] ?? ''));
+    $customer_email = trim(htmlspecialchars($_POST['customer_email'] ?? ''));
+    $customer_phone = trim(htmlspecialchars($_POST['customer_phone'] ?? ''));
+    $special_requests = trim(htmlspecialchars($_POST['special_requests'] ?? ''));
+    $chosen_payment_method = $_POST['payment_method'] ?? null;
+
+    // Validate
+    if (empty($selected_room_id)) $form_errors_booking['room_id'] = "Vui lòng chọn loại phòng.";
+    if (empty($customer_name)) $form_errors_booking['customer_name'] = "Vui lòng nhập họ tên.";
+    if (empty($customer_email) || !filter_var($customer_email, FILTER_VALIDATE_EMAIL)) $form_errors_booking['customer_email'] = "Email không hợp lệ.";
+    if (empty($customer_phone)) $form_errors_booking['customer_phone'] = "Vui lòng nhập số điện thoại.";
+    if (empty($chosen_payment_method)) $form_errors_booking['payment_method'] = "Vui lòng chọn phương thức thanh toán.";
+
+    // Lấy thông tin phòng đã chọn để tính giá và kiểm tra sức chứa
+    $selected_room_info = null;
+    if ($selected_room_id) {
+        foreach ($availableRooms as $r) {
+            if ($r['id'] == $selected_room_id) {
+                $selected_room_info = $r;
+                break;
+            }
         }
     }
 
-} catch (PDOException $e) {
-    die("<div class='error'>Lỗi tải dữ liệu: " . $e->getMessage() . "</div>");
+    if (!$selected_room_info && !isset($form_errors_booking['room_id'])) {
+        $form_errors_booking['room_id'] = "Loại phòng đã chọn không hợp lệ.";
+    } elseif ($selected_room_info) {
+        if (($selected_room_info['capacity'] * $quantity) < $guests) {
+            $form_errors_booking['quantity'] = "Số lượng phòng đã chọn không đủ sức chứa cho " . $guests . " khách.";
+        }
+    }
+
+
+    if (empty($form_errors_booking) && $selected_room_info) {
+        $totalPrice = $selected_room_info['price'] * $nights * $quantity;
+
+        $_SESSION['pending_booking_details'] = [
+            'hotel_id' => $hotelId,
+            'hotel_name' => $hotel['name'],
+            'room_id' => $selected_room_id,
+            'room_type_name' => $selected_room_info['room_type'],
+            'room_price_at_booking' => $selected_room_info['price'],
+            'quantity' => $quantity,
+            'checkin_date' => $checkinDateStr,
+            'checkout_date' => $checkoutDateStr,
+            'nights' => $nights,
+            'guests' => $guests,
+            'total_price' => $totalPrice,
+            'customer_name' => $customer_name,
+            'customer_email' => $customer_email,
+            'customer_phone' => $customer_phone,
+            'special_requests' => $special_requests,
+            'chosen_payment_method' => $chosen_payment_method,
+            'user_id' => $userId
+        ];
+        header('Location: payment.php');
+        exit();
+    }
 }
 
-// Lấy thông tin người dùng từ session nếu đã đăng nhập
-$loggedInName = htmlspecialchars($_SESSION['username'] ?? '');
-$loggedInEmail = htmlspecialchars($_SESSION['verify_email'] ?? '');
-
+// --- PHẦN 4: HIỂN THỊ HTML ---
+$pageTitle = 'Đặt phòng tại ' . htmlspecialchars($hotel['name']);
 include 'includes/header.php';
 ?>
+<div class="booking-page-container">
+    <div class="container content">
+        <h2><i class="fas fa-calendar-check"></i> Đặt phòng: <?= htmlspecialchars($hotel['name']) ?></h2>
 
-<div class="booking-page">
-    <div class="container">
-        <h1>Đặt phòng tại <?= htmlspecialchars($hotel['name'] ?? 'Không xác định') ?></h1>
-        <div class="hotel-details">
-            <?php
-            $imagePath = "assets/images/" . ($hotel['image'] ?? 'default.jpg');
-            if (file_exists($imagePath)): ?>
-                <img src="<?= htmlspecialchars($imagePath) ?>" alt="<?= htmlspecialchars($hotel['name'] ?? 'Không xác định') ?>">
-            <?php else: ?>
-                <img src="assets/images/default.jpg" alt="<?= htmlspecialchars($hotel['name'] ?? 'Không xác định') ?>">
-            <?php endif; ?>
-            <p><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($hotel['location'] ?? 'Không có địa điểm') ?></p>
-            <p><?= htmlspecialchars($hotel['description'] ?? 'Không có mô tả') ?></p>
-        </div>
+        <?php
+        if (isset($_SESSION['error_message_global'])) {
+            echo '<div class="message error-message main-error">' . $_SESSION['error_message_global'] . '</div>';
+            unset($_SESSION['error_message_global']);
+        }
+        // Hiển thị lỗi validate form nếu có
+        if (!empty($form_errors_booking)) {
+            echo '<div class="message error-message form-validation-summary">Vui lòng kiểm tra lại các thông tin sau:<ul>';
+            foreach ($form_errors_booking as $error) {
+                echo '<li>' . $error . '</li>';
+            }
+            echo '</ul></div>';
+        }
+        ?>
 
-        <h2>Thông tin đặt phòng</h2>
-        <form action="payment.php" method="POST" id="bookingForm">
-            <input type="hidden" name="hotel_id" value="<?= $hotelId ?>">
-            <input type="hidden" name="room_id" value="<?= $roomId ?>">
-            <div class="form-group">
-                <label>Loại phòng:</label>
-                <input type="text" value="<?= htmlspecialchars($room['room_type'] ?? 'Không xác định') ?>" readonly>
-            </div>
-            <div class="form-group">
-                <label>Số lượng phòng:</label>
-                <input type="number" name="quantity" value="<?= $quantity ?>" min="1" required>
-            </div>
-            <div class="form-group">
-                <label for="checkin_date">Ngày nhận phòng:</label>
-                <input type="date" id="checkin_date" name="checkin_date" value="<?= htmlspecialchars($checkinDate) ?>" readonly>
-            </div>
-            <div class="form-group">
-                <label for="checkout_date">Ngày trả phòng:</label>
-                <input type="date" id="checkout_date" name="checkout_date" value="<?= htmlspecialchars($checkoutDate) ?>" readonly>
-            </div>
-            <div class="form-group">
-                <label for="guests">Số lượng khách:</label>
-                <input type="text" value="<?= htmlspecialchars($guests) ?>" readonly>
-                <input type="hidden" name="guests" value="<?= $guests ?>">
-            </div>
-            <div class="form-group">
-                <label for="name">Họ và tên:</label>
-                <input type="text" id="name" name="name" value="<?= $loggedInName ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?= $loggedInEmail ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Số điện thoại:</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <label for="special_requests">Yêu cầu đặc biệt (nếu có):</label>
-                <textarea id="special_requests" name="special_requests"></textarea>
+        <form action="booking.php?<?= http_build_query($_GET) // Giữ lại params từ URL ?>" method="POST" id="bookingFormPage">
+            <div class="booking-section summary-section-booking">
+                <h3><i class="fas fa-hotel"></i> Thông tin lưu trú</h3>
+                <p><strong>Khách sạn:</strong> <?= htmlspecialchars($hotel['name']) ?></p>
+                <p><strong>Địa điểm:</strong> <?= htmlspecialchars($hotel['location']) ?></p>
+                <p><strong>Ngày nhận phòng:</strong> <?= htmlspecialchars(date('d/m/Y', strtotime($checkinDateStr))) ?></p>
+                <p><strong>Ngày trả phòng:</strong> <?= htmlspecialchars(date('d/m/Y', strtotime($checkoutDateStr))) ?></p>
+                <p><strong>Số đêm:</strong> <span id="booking_nights"><?= $nights ?></span></p>
+                <p><strong>Số khách:</strong> <?= $guests ?></p>
             </div>
 
-            <h2>Chọn phương thức thanh toán</h2>
-            <div class="payment-options">
-                <div class="form-group">
-                    <input type="radio" id="payment_method_momo" name="payment_method" value="momo" required>
-                    <label for="payment_method_momo"><i class="fas fa-mobile-alt"></i> Momo</label>
+            <div class="booking-section room-selection-booking">
+                <h3><i class="fas fa-bed"></i> Chọn phòng</h3>
+                <?php if (empty($availableRooms)): ?>
+                    <p class="no-rooms-available-booking">Rất tiếc, không có loại phòng nào phù hợp cho <?= $guests ?> khách tại khách sạn này trong thời gian bạn chọn, hoặc tất cả đã được đặt.</p>
+                <?php else: ?>
+                    <div class="form-group-booking <?= isset($form_errors_booking['room_id']) ? 'has-error' : '' ?>">
+                        <label for="room_id">Loại phòng:</label>
+                        <select name="room_id" id="room_id" class="form-control-booking" required>
+                            <option value="">-- Chọn loại phòng --</option>
+                            <?php foreach ($availableRooms as $room): ?>
+                                <option value="<?= $room['id'] ?>"
+                                        data-price="<?= $room['price'] ?>"
+                                        data-capacity="<?= $room['capacity'] ?>"
+                                        <?= (isset($_POST['room_id']) && $_POST['room_id'] == $room['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($room['room_type']) ?> (Tối đa <?= $room['capacity'] ?> khách) - <?= number_format($room['price'], 0, ',', '.') ?> VNĐ/đêm
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?php if(isset($form_errors_booking['room_id'])): ?><span class="error-text-booking"><?= $form_errors_booking['room_id'] ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group-booking <?= isset($form_errors_booking['quantity']) ? 'has-error' : '' ?>">
+                        <label for="quantity">Số lượng phòng:</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control-booking" value="<?= htmlspecialchars($_POST['quantity'] ?? 1) ?>" min="1" max="5" required>
+                         <?php if(isset($form_errors_booking['quantity'])): ?><span class="error-text-booking"><?= $form_errors_booking['quantity'] ?></span><?php endif; ?>
+                    </div>
+                    <div class="form-group-booking">
+                        <strong>Tổng tiền phòng (ước tính):</strong> <span id="estimated_total_price_booking" class="price-highlight-booking">Vui lòng chọn phòng</span>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <?php if (!empty($availableRooms)): // Chỉ hiển thị phần còn lại nếu có phòng để chọn ?>
+            <div class="booking-section customer-info-booking">
+                <h3><i class="fas fa-user-circle"></i> Thông tin liên hệ</h3>
+                <div class="form-group-booking <?= isset($form_errors_booking['customer_name']) ? 'has-error' : '' ?>">
+                    <label for="customer_name">Họ và tên:</label>
+                    <input type="text" name="customer_name" id="customer_name" class="form-control-booking" value="<?= htmlspecialchars($_POST['customer_name'] ?? $loggedInUser['name'] ?? '') ?>" required>
+                    <?php if(isset($form_errors_booking['customer_name'])): ?><span class="error-text-booking"><?= $form_errors_booking['customer_name'] ?></span><?php endif; ?>
                 </div>
-                <div class="form-group">
-                    <input type="radio" id="payment_method_credit_card" name="payment_method" value="credit_card" required>
-                    <label for="payment_method_credit_card"><i class="far fa-credit-card"></i> Thẻ tín dụng</label>
+                <div class="form-group-booking <?= isset($form_errors_booking['customer_email']) ? 'has-error' : '' ?>">
+                    <label for="customer_email">Email:</label>
+                    <input type="email" name="customer_email" id="customer_email" class="form-control-booking" value="<?= htmlspecialchars($_POST['customer_email'] ?? $loggedInUser['email'] ?? '') ?>" required>
+                     <?php if(isset($form_errors_booking['customer_email'])): ?><span class="error-text-booking"><?= $form_errors_booking['customer_email'] ?></span><?php endif; ?>
+                </div>
+                <div class="form-group-booking <?= isset($form_errors_booking['customer_phone']) ? 'has-error' : '' ?>">
+                    <label for="customer_phone">Số điện thoại:</label>
+                    <input type="tel" name="customer_phone" id="customer_phone" class="form-control-booking" value="<?= htmlspecialchars($_POST['customer_phone'] ?? '') ?>" required>
+                     <?php if(isset($form_errors_booking['customer_phone'])): ?><span class="error-text-booking"><?= $form_errors_booking['customer_phone'] ?></span><?php endif; ?>
+                </div>
+                <div class="form-group-booking">
+                    <label for="special_requests">Yêu cầu đặc biệt (nếu có):</label>
+                    <textarea name="special_requests" id="special_requests" class="form-control-booking" rows="3"><?= htmlspecialchars($_POST['special_requests'] ?? '') ?></textarea>
                 </div>
             </div>
 
-            <?php if (isset($error)): ?>
-                <div class="error"><?= $error ?></div>
-            <?php endif; ?>
+            <div class="booking-section payment-method-selection-booking">
+                <h3><i class="fas fa-credit-card"></i> Chọn phương thức thanh toán</h3>
+                <div class="payment-options-booking <?= isset($form_errors_booking['payment_method']) ? 'has-error' : '' ?>">
+                    <div class="payment-option-booking">
+                        <input type="radio" name="payment_method" value="momo" id="pay_momo_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'momo') ? 'checked' : '' ?> required>
+                        <label for="pay_momo_booking"><img src="assets/images/momo_logo.png" alt="Momo" class="payment-logo-booking"> Thanh toán Momo</label>
+                    </div>
+                    <div class="payment-option-booking">
+                        <input type="radio" name="payment_method" value="visa" id="pay_visa_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'visa') ? 'checked' : '' ?> required>
+                        <label for="pay_visa_booking"><img src="assets/images/visa_logo.png" alt="Visa" class="payment-logo-booking"> Thanh toán Visa</label>
+                    </div>
+                    <div class="payment-option-booking">
+                        <input type="radio" name="payment_method" value="cod" id="pay_cod_booking" <?= (isset($_POST['payment_method']) && $_POST['payment_method'] == 'cod') ? 'checked' : '' ?> required>
+                        <label for="pay_cod_booking"><i class="fas fa-money-bill-wave payment-icon-booking"></i> Thanh toán khi nhận phòng (COD)</label>
+                    </div>
+                    <?php if(isset($form_errors_booking['payment_method'])): ?><span class="error-text-booking"><?= $form_errors_booking['payment_method'] ?></span><?php endif; ?>
+                </div>
+            </div>
 
-            <button type="submit" class="book-now-btn">Tiến hành thanh toán</button>
-            <div id="booking-message"></div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block btn-proceed-to-payment-booking" <?= empty($availableRooms) ? 'disabled' : '' ?>>
+                <i class="fas fa-shield-alt"></i> Tiếp tục đến trang thanh toán
+            </button>
+            <?php endif; // End if !empty($availableRooms) ?>
         </form>
     </div>
 </div>
-
 <?php include 'includes/footer.php'; ?>
