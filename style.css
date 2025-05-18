@@ -1105,3 +1105,141 @@ textarea.form-control {
         height: 150px; /* Chiều cao tương ứng */
     }
 }
+
+
+/* --- HEADER LAYOUT 2 DÒNG --- */
+.site-header-layout2 {
+    background-color: #fff; /* Màu nền cho toàn bộ header */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Shadow nhẹ */
+}
+
+.header-row-logo {
+    padding: 0.8rem 1.5rem; /* Padding cho hàng logo */
+    /* Nếu bạn muốn logo căn giữa hoặc có style riêng, thêm ở đây */
+    /* Ví dụ, để giữ logo giống style cũ của bạn (.logo) */
+    text-align: left; /* Hoặc center nếu bạn muốn */
+}
+
+.logo-main-link {
+    text-decoration: none;
+}
+.logo-text-main {
+    font-size: 1.8rem; /* Kích thước từ .logo cũ của bạn, có thể điều chỉnh */
+    color: #007bff;   /* Màu từ .logo cũ của bạn */
+    margin: 0;        /* Bỏ margin mặc định của h1 */
+    font-weight: bold; /* Hoặc font-weight bạn muốn */
+    line-height: 1.2;
+}
+
+.header-row-nav {
+    display: flex; /* Quan trọng: để .nav-left-section và .nav-right-section nằm trên cùng hàng */
+    justify-content: space-between; /* Đẩy hai khối này ra hai bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 0.6rem 1.5rem; /* Padding cho hàng điều hướng */
+    background-color: #f8f9fa; /* Màu nền giống .nav-container cũ của bạn */
+    border-top: 1px solid #e9ecef; /* Đường kẻ nhẹ phân cách với hàng logo */
+    /* border-radius: 8px; Nếu bạn muốn bo góc cho hàng này như .nav-container cũ */
+}
+
+.nav-left-section,
+.nav-right-section {
+    display: flex; /* Để các link con bên trong cũng có thể là flex item */
+    align-items: center;
+}
+
+/* Style chung cho các item điều hướng trong .header-row-nav */
+.nav-item-main {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem; /* Khoảng cách giữa icon và chữ */
+    color: #007bff; /* Màu chữ mặc định từ .nav-link cũ */
+    text-decoration: none;
+    padding: 0.4rem 0.8rem; /* Padding cho các link */
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+.nav-item-main:hover {
+    background-color: rgba(0,123,255,0.08); /* Hiệu ứng hover từ .nav-link cũ */
+    color: #0056b3;
+}
+.nav-item-main i {
+    font-size: 0.95em; /* Kích thước icon */
+    line-height: 1;
+}
+.nav-item-text-main, /* Chữ "Trang chủ", "Đăng ký", "Đăng nhập" */
+.user-action-link-text { /* Chữ "Đơn hàng", "Tên", "Đăng xuất" */
+    font-size: 0.9em;
+}
+
+
+/* Khối chứa các link khi user ĐÃ đăng nhập */
+.user-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Khoảng cách giữa icon Đơn hàng | Tên User | icon Đăng xuất */
+}
+
+/* Link tên người dùng */
+.user-profile-link .user-name-display {
+    font-weight: 500; /* Có thể làm đậm tên người dùng */
+}
+
+/* Các link chỉ hiển thị icon trên desktop (Đơn hàng, Đăng xuất) */
+.user-action-link .user-action-link-text:not(.user-name-display) { /* Áp dụng cho chữ "Đơn hàng", "Đăng xuất" */
+    display: none; /* Mặc định ẩn chữ trên desktop */
+}
+.user-action-link.bookings-link i, /* Icon Đơn hàng */
+.user-action-link.logout-link i {   /* Icon Đăng xuất */
+    font-size: 1.1em; /* Icon có thể to hơn một chút */
+}
+
+
+
+/* ----- RESPONSIVE CHO HEADER 2 DÒNG ----- */
+@media (max-width: 768px) { /* Mobile */
+    .header-row-logo {
+        padding: 0.6rem 1rem;
+        text-align: center; /* Căn giữa logo trên mobile */
+    }
+    .logo-text-main {
+        font-size: 1.5rem;
+    }
+
+    .header-row-nav {
+        padding: 0.5rem 1rem;
+        flex-direction: column; /* Xếp "Trang chủ" và "Auth/User" thành cột */
+        align-items: flex-start; /* Căn các khối này về bên trái */
+        gap: 0.5rem; /* Khoảng cách giữa khối "Trang chủ" và khối "Auth/User" */
+    }
+
+    .nav-left-section,
+    .nav-right-section {
+        width: 100%; /* Cho các khối chiếm toàn bộ chiều rộng để dễ căn chỉnh */
+    }
+    .nav-right-section {
+        justify-content: flex-end; /* Đẩy các link user về bên phải nếu vẫn là hàng */
+        /* Nếu .header-row-nav là column thì không cần justify-content này nữa */
+    }
+    .navbar-auth-user-section, /* Khối chứa ĐK/ĐN hoặc các user actions */
+    .user-actions-group {
+        width: 100%;
+        justify-content: space-between; /* Phân bố đều các link/icon */
+        /* Hoặc flex-start nếu muốn chúng nằm gần nhau bên trái */
+    }
+
+
+    /* Hiện lại chữ cho tất cả các link trên mobile nếu muốn */
+    .nav-item-text-main,
+    .user-action-link-text {
+        display: inline-block; /* Hiện lại chữ */
+        font-size: 0.85em;
+    }
+    .nav-item-main {
+        gap: 0.4rem; /* Thêm lại gap khi chữ hiện */
+        padding: 0.5rem; /* Điều chỉnh padding */
+    }
+    .nav-item-main i {
+        font-size: 1em;
+    }
+}
