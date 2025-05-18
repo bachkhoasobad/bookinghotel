@@ -3,7 +3,6 @@ session_start();
 include 'includes/config.php';
 
 // --- PHẦN 1: KIỂM TRA ĐĂNG NHẬP VÀ SESSION BOOKING DETAILS ---
-// ... (Giữ nguyên như trước) ...
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['error_message_global'] = "Phiên làm việc hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại.";
     if (isset($_SESSION['pending_booking_details'])) {
@@ -35,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_payment_actio
 
     if ($chosen_payment_method === 'visa') {
         $card_number = trim($_POST['card_number_visa'] ?? '');
-        $card_expiry_mmdd = trim($_POST['card_expiry_visa'] ?? ''); // Người dùng nhập MM/DD
+        $card_expiry_mmdd = trim($_POST['card_expiry_visa'] ?? ''); 
         $card_cvc = trim($_POST['card_cvc_visa'] ?? '');
         $card_holder_name = trim($_POST['card_holder_name_visa'] ?? '');
 

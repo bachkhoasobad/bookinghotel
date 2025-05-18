@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'includes/config.php'; // Kết nối CSDL nếu cần lấy thêm thông tin
-$pageTitle = 'Thông báo Đặt phòng'; // Tiêu đề chung
+include 'includes/config.php'; 
+$pageTitle = 'Thông báo Đặt phòng'; 
 
 $is_success = false;
 $display_message = '';
@@ -34,11 +34,10 @@ if (isset($_SESSION['booking_confirmation_message'])) {
     // Xóa các session thất bại
     unset($_SESSION['payment_error_message']);
     unset($_SESSION['failed_transaction_id_info']);
-    // Giữ lại $_SESSION['pending_booking_details'] để người dùng có thể thử lại thanh toán
-    // nếu luồng cho phép quay lại trang payment.php với thông tin cũ.
-
+    
+    
 } else {
-    // Nếu không có thông báo nào, có thể người dùng truy cập trực tiếp
+   
     $_SESSION['error_message_global'] = "Không có thông tin trạng thái đặt phòng để hiển thị.";
     header('Location: index.php');
     exit();
@@ -82,16 +81,11 @@ include 'includes/header.php';
                     <a href="my_bookings.php" class="btn btn-secondary"><i class="fas fa-history"></i> Xem lịch sử đặt phòng</a>
                 <?php else: // Trường hợp thất bại ?>
                     <?php
-                    // Kiểm tra xem có thông tin đặt phòng đang chờ để thử lại không
-                    // Nếu có, nút "Thử lại thanh toán" sẽ đưa về payment.php
-                    // Nếu không, chỉ có nút về trang chủ.
+
                     $retry_payment_link = 'index.php'; // Mặc định về trang chủ
                     if (isset($_SESSION['pending_booking_details'])) {
-                        // Giả sử người dùng có thể quay lại trang payment để thử lại
-                        // Nếu bạn muốn họ quay lại trang booking để chọn lại PTTT:
-                        // $original_get_params = $_SESSION['pending_booking_details']['original_get_params'] ?? []; // Cần lưu ở booking.php
-                        // $retry_payment_link = 'booking.php?' . http_build_query($original_get_params);
-                        $retry_payment_link = 'payment.php'; // Đưa thẳng về trang payment để thử lại với PTTT đã chọn hoặc chọn lại
+
+                        $retry_payment_link = 'payment.php'; 
                     }
                     ?>
                     <a href="<?= $retry_payment_link ?>" class="btn btn-warning"><i class="fas fa-redo"></i>

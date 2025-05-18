@@ -1,8 +1,8 @@
 <?php
 $host = 'localhost';
 $dbname = 'hotel_booking'; // Thay bằng tên database của bạn
-$username = 'root';     // Thay bằng username database của bạn
-$password = '';     // Thay bằng password database của bạn
+$username = 'root';    
+$password = '';     
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);

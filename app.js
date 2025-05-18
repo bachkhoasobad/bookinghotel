@@ -356,14 +356,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     if (!visaValid) {
-                        // Thay vì alert, bạn có thể hiển thị lỗi tập trung ở một chỗ
-                        // alert('Lỗi thông tin thẻ Visa:\n' + alertMessage);
                         const globalErrorContainer = document.querySelector('.payment-global-error-js');
                         if (globalErrorContainer) {
                             globalErrorContainer.textContent = 'Vui lòng kiểm tra lại các thông tin thẻ Visa đã nhập.';
                             globalErrorContainer.style.display = 'block';
                         }
-                        event.preventDefault(); // Ngăn form submit
+                        event.preventDefault(); 
                     } else {
                         const globalErrorContainer = document.querySelector('.payment-global-error-js');
                         if (globalErrorContainer) globalErrorContainer.style.display = 'none';
@@ -381,9 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (oldError) oldError.remove();
 
         const errorSpan = document.createElement('span');
-        errorSpan.className = 'payment-form-error-text error-text-booking'; // Sử dụng class đã có hoặc tạo class mới
+        errorSpan.className = 'payment-form-error-text error-text-booking'; 
         errorSpan.textContent = message;
-        inputElement.parentElement.appendChild(errorSpan); // Chèn lỗi vào sau input
+        inputElement.parentElement.appendChild(errorSpan); 
     }
 
 });

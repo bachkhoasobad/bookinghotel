@@ -3,9 +3,9 @@ body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   background: #f7f7f7;
-  min-height: 100vh; /* Thêm */
-  display: flex; /* Thêm */
-  flex-direction: column; /* Thêm */
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
 }
 
 .error-message {
@@ -228,7 +228,6 @@ body {
   font-weight: bold;
   margin-top: 1rem;
 }
-/* ... (tất cả CSS hiện có của bạn) ... */
 
 /* Pagination Styles */
 .pagination {
@@ -370,22 +369,22 @@ body {
 footer {
   background: #f8f9fa;
   padding: 2rem 0;
-  margin-top: auto; /* Quan trọng - đẩy footer xuống dưới cùng */
+  margin-top: auto; 
   width: 100%;
 }
 
 footer .container {
-  text-align: center; /* Căn giữa nội dung theo chiều ngang */
+  text-align: center; 
   max-width: 1200px;
-  margin: 0 auto; /* Căn giữa container */
-  padding: 0 15px; /* Tránh nội dung dính sát mép */
+  margin: 0 auto; 
+  padding: 0 15px; 
 }
 
 footer p {
   color: #666;
   margin: 0;
   font-size: 0.9rem;
-  width: 100%; /* Đảm bảo đoạn văn chiếm full width */
+  width: 100%; 
 }
 
 /* ========== SEARCH FILTERS ========== */
@@ -553,7 +552,7 @@ hr {
 }
 
 .form-control,
-.form-control-payment { /* Thêm .form-control-payment từ payment.php */
+.form-control-payment { 
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #ccc;
@@ -693,8 +692,8 @@ textarea.form-control {
 .hotel-location-detail { font-size: 1.1em; color: #555; margin-bottom: 8px; }
 .hotel-rating-stars { font-size: 1em; color: #666; }
 .hotel-rating-stars .fa-star { color: #ffc107; }
-.hotel-rating-stars .fa-star-half-alt { color: #ffc107; } /* For half stars if you implement */
-.hotel-rating-stars .fa-reg.fa-star { color: #ccc; } /* For empty stars */
+.hotel-rating-stars .fa-star-half-alt { color: #ffc107; } 
+.hotel-rating-stars .fa-reg.fa-star { color: #ccc; } 
 
 .hotel-main-content-detail { display: flex; flex-wrap: wrap; gap: 25px; margin-bottom: 25px; }
 .hotel-gallery-detail { flex: 1 1 55%; min-width: 300px; }
@@ -795,8 +794,8 @@ textarea.form-control {
     .view-rooms-form .form-row-detail { flex-direction: column; gap: 10px; }
     .view-rooms-form .form-group-detail { max-width: 100%; }
 
-    .form-row-payment { flex-direction: column; gap: 0; } /* Stack card expiry/cvc on mobile */
-    .form-row-payment .form-group-payment { margin-bottom: 15px; } /* Ensure spacing when stacked */
+    .form-row-payment { flex-direction: column; gap: 0; } 
+    .form-row-payment .form-group-payment { margin-bottom: 15px; } 
 }
 .payment-form-error-text {
     color: #dc3545;
@@ -818,21 +817,21 @@ textarea.form-control {
     background-color: #fff;
     padding: 30px 40px;
     border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* Tăng shadow một chút */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
     text-align: center;
-    max-width: 680px; /* Tăng max-width */
+    max-width: 680px; 
     width: 100%;
 }
 
 .status-card.success-card-custom {
-    border-top: 6px solid #28a745; /* Viền xanh lá cây đậm hơn */
+    border-top: 6px solid #28a745; 
 }
 .status-card.failure-card-custom {
-    border-top: 6px solid #dc3545; /* Viền đỏ đậm hơn */
+    border-top: 6px solid #dc3545; 
 }
 
 .status-icon-custom {
-    font-size: 5em; /* Tăng kích thước icon */
+    font-size: 5em;
     margin-bottom: 20px;
 }
 .success-card-custom .status-icon-custom {
@@ -843,34 +842,34 @@ textarea.form-control {
 }
 
 .status-card h2 {
-    font-size: 2.3em; /* Tăng kích thước tiêu đề */
+    font-size: 2.3em; 
     margin-bottom: 15px;
     color: #333;
 }
 
-.status-main-message { /* Thông báo chính (thành công hoặc thất bại) */
-    font-size: 1.2em; /* Tăng kích thước font */
+.status-main-message { 
+    font-size: 1.2em; 
     color: #454545;
     line-height: 1.7;
     margin-bottom: 25px;
 }
 
-.booking-summary-status { /* Panel thông tin đơn hàng/giao dịch */
+.booking-summary-status { 
     margin-top: 25px;
     padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #e9e9e9;
-    border-left: 4px solid #007bff; /* Thêm viền trái màu xanh dương */
+    border-left: 4px solid #007bff; 
     border-radius: 6px;
     text-align: left;
     font-size: 0.95em;
 }
-.booking-summary-status.failure-details { /* Style riêng cho chi tiết thất bại nếu cần */
-    border-left-color: #ffc107; /* Ví dụ: viền vàng cho chi tiết lỗi */
+.booking-summary-status.failure-details { 
+    border-left-color: #ffc107; 
 }
 
 .booking-summary-status h3 {
-    font-size: 1.25em; /* Tăng kích thước tiêu đề phụ */
+    font-size: 1.25em; 
     color: #0056b3;
     margin-bottom: 12px;
     padding-bottom: 5px;
@@ -882,12 +881,12 @@ textarea.form-control {
 }
 .booking-summary-status p strong {
     color: #333;
-    min-width: 180px; /* Đảm bảo các label có độ rộng nhất định */
+    min-width: 180px; 
     display: inline-block;
 }
 
 .status-actions-custom {
-    margin-top: 35px; /* Tăng khoảng cách */
+    margin-top: 35px; 
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -895,16 +894,16 @@ textarea.form-control {
 }
 
 .status-actions-custom .btn {
-    padding: 12px 25px; /* Nút to hơn */
-    font-size: 1.05em; /* Chữ to hơn chút */
+    padding: 12px 25px; 
+    font-size: 1.05em; 
     text-decoration: none;
     border-radius: 5px;
-    min-width: 200px; /* Nút rộng hơn */
+    min-width: 200px; 
 }
 .status-actions-custom .btn i {
     margin-right: 8px;
 }
-.status-actions-custom .btn.btn-warning { /* Nút thử lại */
+.status-actions-custom .btn.btn-warning { 
     background-color: #ffc107;
     border-color: #ffc107;
     color: #212529;
@@ -930,55 +929,55 @@ textarea.form-control {
         font-size: 1.1em;
     }
     .status-actions-custom .btn {
-        min-width: 100%; /* Nút chiếm toàn bộ chiều rộng trên mobile */
-        margin-bottom: 10px; /* Khoảng cách giữa các nút khi stack */
+        min-width: 100%; 
+        margin-bottom: 10px; 
     }
     .status-actions-custom .btn:last-child {
         margin-bottom: 0;
     }
 }
 /* === My Bookings Page (my_bookings.php) === */
-.my-bookings-page .container.content { /* Sử dụng lại style chung nếu có */
+.my-bookings-page .container.content { 
     background-color: #fff;
-    padding: 25px; /* Tăng padding một chút */
+    padding: 25px; 
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Tăng shadow */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
 }
 
 .my-bookings-page h2 {
     text-align: center;
-    color: #0056b3; /* Giữ màu từ trước */
-    margin-bottom: 30px; /* Tăng khoảng cách */
-    font-size: 2em; /* Tăng kích thước tiêu đề */
+    color: #0056b3; 
+    margin-bottom: 30px; 
+    font-size: 2em; 
 }
 .my-bookings-page h2 i {
     margin-right: 12px;
 }
 
 .my-bookings-list {
-    display: grid; /* Sử dụng grid để hiển thị card đẹp hơn */
-    grid-template-columns: 1fr; /* Mặc định 1 cột */
-    gap: 25px; /* Khoảng cách giữa các card */
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 25px; 
 }
 
 /* Nếu muốn 2 cột trên màn hình lớn hơn */
 @media (min-width: 992px) {
     .my-bookings-list {
-        grid-template-columns: repeat(2, 1fr); /* 2 cột */
+        grid-template-columns: repeat(2, 1fr); 
     }
 }
 @media (min-width: 1200px) {
-    /* Có thể giữ 2 cột hoặc tăng lên nếu muốn, tùy thiết kế */
+    
 }
 
 
 .my-booking-card {
-    background-color: #ffffff; /* Nền trắng cho card */
-    border: 1px solid #e0e0e0; /* Viền nhẹ hơn */
-    border-radius: 8px; /* Bo góc nhiều hơn */
+    background-color: #ffffff; 
+    border: 1px solid #e0e0e0; 
+    border-radius: 8px; 
     padding: 20px;
     display: flex;
-    flex-direction: column; /* Mặc định xếp dọc, sẽ đổi cho màn hình lớn hơn nếu cần */
+    flex-direction: column; 
     gap: 18px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
@@ -991,10 +990,10 @@ textarea.form-control {
 
 .my-booking-hotel-image {
     flex-shrink: 0;
-    width: 100%; /* Chiếm toàn bộ chiều rộng của card ban đầu */
-    height: 180px; /* Chiều cao cố định cho ảnh */
-    border-radius: 6px; /* Bo góc cho ảnh */
-    overflow: hidden; /* Đảm bảo ảnh không tràn ra ngoài */
+    width: 100%; 
+    height: 180px; 
+    border-radius: 6px; 
+    overflow: hidden; 
 }
 
 .my-booking-hotel-image img {
@@ -1010,13 +1009,13 @@ textarea.form-control {
 }
 
 .my-booking-details h3 {
-    font-size: 1.5em; /* Kích thước tên khách sạn */
+    font-size: 1.5em; 
     margin-top: 0;
     margin-bottom: 5px;
     color: #333;
 }
 .my-booking-details h3 a {
-    color: inherit; /* Kế thừa màu từ h3 */
+    color: inherit; 
     text-decoration: none;
 }
 .my-booking-details h3 a:hover {
@@ -1042,25 +1041,25 @@ textarea.form-control {
 
 .my-booking-details p {
     margin-bottom: 8px;
-    font-size: 0.95em; /* Giữ nguyên hoặc điều chỉnh */
-    color: #333; /* Màu chữ đậm hơn chút */
+    font-size: 0.95em; 
+    color: #333; 
     line-height: 1.6;
 }
 
 .my-booking-details p strong {
-    color: #000; /* Màu chữ cho label đậm nhất */
-    min-width: 120px; /* Điều chỉnh nếu cần */
+    color: #000; 
+    min-width: 120px; 
     display: inline-block;
     margin-right: 5px;
 }
 
-.price-highlight-booking { /* Đã có */
+.price-highlight-booking { 
     font-weight: bold;
-    color: #c0392b; /* Màu đỏ cho giá nổi bật hơn */
+    color: #c0392b; 
     font-size: 1.1em;
 }
 
-/* CSS cho các trạng thái đơn hàng (ví dụ) */
+/* CSS cho các trạng thái đơn hàng  */
 .status-confirmed { color: #27ae60; font-weight: bold; }
 .status-pending { color: #f39c12; font-weight: bold; }
 .status-cancelled { color: #c0392b; font-weight: bold; }
@@ -1070,15 +1069,15 @@ textarea.form-control {
     margin-top: 15px;
     display: flex;
     gap: 10px;
-    flex-wrap: wrap; /* Cho các nút xuống dòng nếu không đủ chỗ */
+    flex-wrap: wrap; 
 }
-.booking-card-actions .btn-sm { /* Style cho các nút nhỏ nếu có */
+.booking-card-actions .btn-sm { 
     padding: 0.3rem 0.8rem;
     font-size: 0.85rem;
 }
 
 
-.my-bookings-page .message.info-message { /* Đã có từ trước, có thể chỉnh lại nếu cần */
+.my-bookings-page .message.info-message { 
     text-align: center;
     padding: 25px;
     background-color: #f8f9fa;
@@ -1097,53 +1096,51 @@ textarea.form-control {
 /* Điều chỉnh layout card cho màn hình lớn hơn nếu muốn ảnh bên trái, nội dung bên phải */
 @media (min-width: 768px) {
     .my-booking-card {
-        flex-direction: row; /* Ảnh bên trái, nội dung bên phải */
-        align-items: flex-start; /* Căn các item lên trên cùng */
+        flex-direction: row; 
+        align-items: flex-start; 
     }
     .my-booking-hotel-image {
-        width: 180px; /* Kích thước ảnh cố định bên trái */
-        height: 150px; /* Chiều cao tương ứng */
+        width: 180px; 
+        height: 150px; 
     }
 }
 
 
 /* --- HEADER LAYOUT 2 DÒNG --- */
 .site-header-layout2 {
-    background-color: #fff; /* Màu nền cho toàn bộ header */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Shadow nhẹ */
+    background-color: #fff; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
 }
 
 .header-row-logo {
-    padding: 0.8rem 1.5rem; /* Padding cho hàng logo */
-    /* Nếu bạn muốn logo căn giữa hoặc có style riêng, thêm ở đây */
-    /* Ví dụ, để giữ logo giống style cũ của bạn (.logo) */
-    text-align: left; /* Hoặc center nếu bạn muốn */
+    padding: 0.8rem 1.5rem; 
+    text-align: left; 
 }
 
 .logo-main-link {
     text-decoration: none;
 }
 .logo-text-main {
-    font-size: 1.8rem; /* Kích thước từ .logo cũ của bạn, có thể điều chỉnh */
-    color: #007bff;   /* Màu từ .logo cũ của bạn */
-    margin: 0;        /* Bỏ margin mặc định của h1 */
-    font-weight: bold; /* Hoặc font-weight bạn muốn */
+    font-size: 1.8rem; 
+    color: #007bff;   
+    margin: 0;        
+    font-weight: bold; 
     line-height: 1.2;
 }
 
 .header-row-nav {
-    display: flex; /* Quan trọng: để .nav-left-section và .nav-right-section nằm trên cùng hàng */
-    justify-content: space-between; /* Đẩy hai khối này ra hai bên */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    padding: 0.6rem 1.5rem; /* Padding cho hàng điều hướng */
-    background-color: #f8f9fa; /* Màu nền giống .nav-container cũ của bạn */
-    border-top: 1px solid #e9ecef; /* Đường kẻ nhẹ phân cách với hàng logo */
-    /* border-radius: 8px; Nếu bạn muốn bo góc cho hàng này như .nav-container cũ */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0.6rem 1.5rem; 
+    background-color: #f8f9fa; 
+    border-top: 1px solid #e9ecef; 
+   
 }
 
 .nav-left-section,
 .nav-right-section {
-    display: flex; /* Để các link con bên trong cũng có thể là flex item */
+    display: flex; 
     align-items: center;
 }
 
@@ -1151,24 +1148,24 @@ textarea.form-control {
 .nav-item-main {
     display: flex;
     align-items: center;
-    gap: 0.4rem; /* Khoảng cách giữa icon và chữ */
-    color: #007bff; /* Màu chữ mặc định từ .nav-link cũ */
+    gap: 0.4rem; 
+    color: #007bff; 
     text-decoration: none;
-    padding: 0.4rem 0.8rem; /* Padding cho các link */
+    padding: 0.4rem 0.8rem; 
     border-radius: 4px;
     white-space: nowrap;
     transition: background-color 0.2s, color 0.2s;
 }
 .nav-item-main:hover {
-    background-color: rgba(0,123,255,0.08); /* Hiệu ứng hover từ .nav-link cũ */
+    background-color: rgba(0,123,255,0.08); 
     color: #0056b3;
 }
 .nav-item-main i {
-    font-size: 0.95em; /* Kích thước icon */
+    font-size: 0.95em; 
     line-height: 1;
 }
-.nav-item-text-main, /* Chữ "Trang chủ", "Đăng ký", "Đăng nhập" */
-.user-action-link-text { /* Chữ "Đơn hàng", "Tên", "Đăng xuất" */
+.nav-item-text-main, 
+.user-action-link-text { 
     font-size: 0.9em;
 }
 
@@ -1177,30 +1174,30 @@ textarea.form-control {
 .user-actions-group {
     display: flex;
     align-items: center;
-    gap: 0.8rem; /* Khoảng cách giữa icon Đơn hàng | Tên User | icon Đăng xuất */
+    gap: 0.8rem; 
 }
 
 /* Link tên người dùng */
 .user-profile-link .user-name-display {
-    font-weight: 500; /* Có thể làm đậm tên người dùng */
+    font-weight: 500; 
 }
 
 /* Các link chỉ hiển thị icon trên desktop (Đơn hàng, Đăng xuất) */
-.user-action-link .user-action-link-text:not(.user-name-display) { /* Áp dụng cho chữ "Đơn hàng", "Đăng xuất" */
-    display: none; /* Mặc định ẩn chữ trên desktop */
+.user-action-link .user-action-link-text:not(.user-name-display) { 
+    display: none; 
 }
-.user-action-link.bookings-link i, /* Icon Đơn hàng */
-.user-action-link.logout-link i {   /* Icon Đăng xuất */
-    font-size: 1.1em; /* Icon có thể to hơn một chút */
+.user-action-link.bookings-link i, 
+.user-action-link.logout-link i {   
+    font-size: 1.1em; 
 }
 
 
 
 /* ----- RESPONSIVE CHO HEADER 2 DÒNG ----- */
-@media (max-width: 768px) { /* Mobile */
+@media (max-width: 768px) {
     .header-row-logo {
         padding: 0.6rem 1rem;
-        text-align: center; /* Căn giữa logo trên mobile */
+        text-align: center; 
     }
     .logo-text-main {
         font-size: 1.5rem;
@@ -1208,36 +1205,33 @@ textarea.form-control {
 
     .header-row-nav {
         padding: 0.5rem 1rem;
-        flex-direction: column; /* Xếp "Trang chủ" và "Auth/User" thành cột */
-        align-items: flex-start; /* Căn các khối này về bên trái */
-        gap: 0.5rem; /* Khoảng cách giữa khối "Trang chủ" và khối "Auth/User" */
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 0.5rem; 
     }
 
     .nav-left-section,
     .nav-right-section {
-        width: 100%; /* Cho các khối chiếm toàn bộ chiều rộng để dễ căn chỉnh */
+        width: 100%; 
     }
     .nav-right-section {
-        justify-content: flex-end; /* Đẩy các link user về bên phải nếu vẫn là hàng */
-        /* Nếu .header-row-nav là column thì không cần justify-content này nữa */
+        justify-content: flex-end; 
+      
     }
-    .navbar-auth-user-section, /* Khối chứa ĐK/ĐN hoặc các user actions */
+    .navbar-auth-user-section, 
     .user-actions-group {
         width: 100%;
-        justify-content: space-between; /* Phân bố đều các link/icon */
-        /* Hoặc flex-start nếu muốn chúng nằm gần nhau bên trái */
+        justify-content: space-between;
+       
     }
-
-
-    /* Hiện lại chữ cho tất cả các link trên mobile nếu muốn */
     .nav-item-text-main,
     .user-action-link-text {
-        display: inline-block; /* Hiện lại chữ */
+        display: inline-block; 
         font-size: 0.85em;
     }
     .nav-item-main {
-        gap: 0.4rem; /* Thêm lại gap khi chữ hiện */
-        padding: 0.5rem; /* Điều chỉnh padding */
+        gap: 0.4rem; 
+        padding: 0.5rem; 
     }
     .nav-item-main i {
         font-size: 1em;
